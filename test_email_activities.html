@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email Activities</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Email Activities Test</h1>
+    
+    <div class="test-section">
+        <h3>Test API Endpoints</h3>
+        <button onclick="testGetActivities()">Test Get Recent Activities</button>
+        <button onclick="testGetSingleActivity()">Test Get Single Activity</button>
+        <button onclick="testAddActivity()">Test Add New Activity</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>API Test Results</h3>
+        <div id="apiResults"></div>
+    </div>
+
+    <script>
+        function testGetActivities() {
+            $.ajax({
+                url: 'dashboard/get_recent_activities',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showResult('Recent activities loaded successfully. Count: ' + response.data.length, 'success');
+                        console.log('Activities:', response.data);
+                    } else {
+                        showResult('Failed to load activities: ' + response.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('Error loading activities: ' + error, 'error');
+                }
+            });
+        }
+        
+        function testGetSingleActivity() {
+            // Test with ID 1
+            $.ajax({
+                url: 'dashboard/get_activity/1',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showResult('Single activity loaded successfully: ' + response.data.message, 'success');
+                        console.log('Activity:', response.data);
+                    } else {
+                        showResult('Failed to load activity: ' + response.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('Error loading activity: ' + error, 'error');
+                }
+            });
+        }
+        
+        function testAddActivity() {
+            $.ajax({
+                url: 'dashboard/add_activity',
+                type: 'POST',
+                data: {
+                    message: 'Test email activity ' + Date.now(),
+                    fullname: 'Test User',
+                    email: 'test@example.com'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showResult('Activity added successfully. ID: ' + response.data.id, 'success');
+                    } else {
+                        showResult('Failed to add activity: ' + response.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('Error adding activity: ' + error, 'error');
+                }
+            });
+        }
+        
+        function showResult(message, type) {
+            const timestamp = new Date().toLocaleTimeString();
+            $('#apiResults').prepend(`<div class="${type}">[${timestamp}] ${message}</div>`);
+        }
+        
+        // Load initial test
+        $(document).ready(function() {
+            testGetActivities();
+        });
+    </script>
+</body>
+</html> 

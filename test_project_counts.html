@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Project Counts</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .count-display { font-size: 24px; font-weight: bold; color: #007bff; margin: 10px 0; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Project Counts Test</h1>
+    
+    <div class="test-section">
+        <h3>Current Counts</h3>
+        <div>Total Projects: <span class="count-display" id="totalProjects">-</span></div>
+        <div>Active Projects: <span class="count-display" id="activeProjects">-</span></div>
+        <div>Completed Projects: <span class="count-display" id="completedProjects">-</span></div>
+        <button onclick="refreshCounts()">Refresh Counts</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Operations</h3>
+        <button onclick="testCreateProject()">Test Create Project</button>
+        <button onclick="testUpdateProject()">Test Update Project</button>
+        <button onclick="testDeleteProject()">Test Delete Project</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>API Test Results</h3>
+        <div id="apiResults"></div>
+    </div>
+
+    <script>
+        // Load initial counts
+        $(document).ready(function() {
+            refreshCounts();
+        });
+        
+        function refreshCounts() {
+            $.ajax({
+                url: 'projects/get_stats',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#totalProjects').text(response.data.total_projects);
+                        $('#activeProjects').text(response.data.active_projects);
+                        $('#completedProjects').text(response.data.completed_projects);
+                        showResult('Counts refreshed successfully', 'success');
+                    } else {
+                        showResult('Failed to refresh counts: ' + response.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('Error refreshing counts: ' + error, 'error');
+                }
+            });
+        }
+        
+        function testCreateProject() {
+            $.ajax({
+                url: 'projects/create',
+                type: 'POST',
+                data: {
+                    title: 'Test Project ' + Date.now(),
+                    description: 'This is a test project',
+                    location: 'Test Location',
+                    project_date: '2024-12-31',
+                    status: 'active'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showResult('Project created successfully. Stats: ' + JSON.stringify(response.stats), 'success');
+                        refreshCounts();
+                    } else {
+                        showResult('Failed to create project: ' + response.message, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('Error creating project: ' + error, 'error');
+                }
+            });
+        }
+        
+        function testUpdateProject() {
+            // This would need an existing project ID
+            showResult('Update test requires existing project ID', 'error');
+        }
+        
+        function testDeleteProject() {
+            // This would need an existing project ID
+            showResult('Delete test requires existing project ID', 'error');
+        }
+        
+        function showResult(message, type) {
+            const timestamp = new Date().toLocaleTimeString();
+            $('#apiResults').prepend(`<div class="${type}">[${timestamp}] ${message}</div>`);
+        }
+    </script>
+</body>
+</html> 

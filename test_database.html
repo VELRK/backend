@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+</head>
+<body>
+    <h1>Database Test</h1>
+    
+    <h2>Users Test</h2>
+    <div id="usersResult">Loading...</div>
+    
+    <h2>Blogs Test</h2>
+    <div id="blogsResult">Loading...</div>
+    
+    <script>
+        // Test Users AJAX
+        $.ajax({
+            url: 'http://localhost/ferrigor/users/get_users',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $('#usersResult').html('<pre>' + JSON.stringify(response, null, 2) + '</pre>');
+            },
+            error: function(xhr, status, error) {
+                $('#usersResult').html('Error: ' + error + '<br>Status: ' + status);
+            }
+        });
+        
+        // Test Blogs AJAX
+        $.ajax({
+            url: 'http://localhost/ferrigor/blogs/get_blogs',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $('#blogsResult').html('<pre>' + JSON.stringify(response, null, 2) + '</pre>');
+            },
+            error: function(xhr, status, error) {
+                $('#blogsResult').html('Error: ' + error + '<br>Status: ' + status);
+            }
+        });
+    </script>
+</body>
+</html> 
